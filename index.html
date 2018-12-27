@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="X-UA-Compatible" content="ie=8">
   <title>实时视频</title>
 </head>
-<body>
-  
+<body onload="init.loadOcx();" onunload="dahua.logout();">
+  <div class="dahua_ocx" id="dahuaOcx">
+    
+  </div>
+  <div class="control_panel" id="controlPanel">
+    
+  </div>
 </body>
+<script type="text/javascript" src="./js/lib/jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="./js/lib/dahua/dahua.js"></script>
+<script type="text/javascript" src="./js/app/init.js"></script>
 </html>
