@@ -3,7 +3,7 @@
  * @Author: jg
  * @Date: 2018-12-27 14:55:56
  * @LastEditors: jg
- * @LastEditTime: 2018-12-27 18:00:03
+ * @LastEditTime: 2018-12-27 20:00:12
  */
 
 'use strict';
@@ -27,17 +27,19 @@ var dahua = (function() {
    */
   var initOcx = function(domId, option) {
     this.option = option;
-    selfObj.ocxObj = document.createElement('object');
-    selfObj.ocxObj.classsid = 'CLSID:D3E383B6-765D-448D-9476-DFD8B499926D';
-    selfObj.ocxObj.events = 'true';
-    selfObj.ocxObj.width = this.option.width || '100%';
-    selfObj.ocxObj.height = this.option.height || '100%';
-    selfObj.ocxObj.id = this.option.id || 'DPSDK_OCX';
+    var ocx = document.createElement('object');
+    ocx.classid = 'CLSID:D3E383B6-765D-448D-9476-DFD8B499926D';
+    ocx.events = 'true';
+    ocx.width = this.option.width || '100%';
+    ocx.height = this.option.height || '100%';
+    ocx.id = this.option.id || 'DPSDK_OCX';
+    ocx.codebase = "DpsdkOcx.cab#version=1.0.0.0";
     try{
-      document.getElementById(domId).appendChild(selfObj.ocxObj);
+      document.getElementById(domId).appendChild(ocx);
     }catch(e){
       alert("请利用容器DIV创建地图");
     }
+    selfObj.ocxObj = ocx;
     return selfObj.ocxObj;
   };
 
@@ -92,10 +94,54 @@ var dahua = (function() {
     }
   };
 
+  /**
+   * @description 添加事件
+   * @method on
+   * @param { String } 事件名
+   * @param { Object } 函数对象
+   * @return { Null }
+   * @author jg
+   * @Date 2018-12-27 19:57:53
+   * @LastEditors: jg
+   * @LastEditTime: Do not edit
+   */
+  var on = function(event, func) {
+    if(selfObj.ocxObj.attachEvent){
+      selfObj.ocxObj.attachEvent(event, func);
+    }else if(selfObj.ocxObj.addEventListener){
+      selfObj.ocxObj.addEventListener(event, func, false);
+    }else{
+      alert("failed to attach event");
+    }
+  };
+
+  /**
+   * @description 删除事件
+   * @method off
+   * @param { String } 事件名
+   * @param { Object } 函数对象
+   * @return { Null }
+   * @author jg
+   * @Date 2018-12-27 19:59:30
+   * @LastEditors: jg
+   * @LastEditTime: Do not edit
+   */
+  var off = function(event, func) {
+    if(selfObj.ocxObj.detachEvent){
+      selfObj.ocxObj.detachEvent(event, func);
+    }else if(selfObj.ocxObj.removeEventListener){
+      selfObj.ocxObj.removeEventListener(event, func, false);
+    }else{
+      alert("failed to remove event");
+    }
+  };
+
   return {
     selfObj: selfObj,
     initOcx: initOcx,
     login: login,
-    logout: logout
+    logout: logout,
+    on: on,
+    off: off
   };
 }());

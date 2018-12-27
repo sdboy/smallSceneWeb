@@ -1,0 +1,18 @@
+/*css document*/
+@charset "utf-8";
+
+@mixin clearDefault ($width, $height) {
+  padding: 0px;
+  margin: 0px;
+  width: $width;
+  height: $height;
+}
+
+html, body {
+  @include clearDefault(100%, 100%);
+  overflow: hidden;
+}
+
+.dahua_ocx {
+  @include clearDefault(100%, 400px);
+}
