@@ -7,11 +7,15 @@
  */
 'use strict';
 var init = (function() {
+  var selfObj = {
+    'gWndId': null,
+  };
+
   var loadOcx = function() {
     var ocxObj = dahua.initOcx('dahuaOcx', {'width': '100%', 'height': '80%'});
-    var gWndId = ocxObj.DPSDK_CreateSmartWnd(0, 0, 100, 100);
-    ocxObj.DPSDK_SetWndCount(gWndId, 4); 
-    ocxObj.DPSDK_SetSelWnd(gWndId, 0);
+    selfObj.gWndId = ocxObj.DPSDK_CreateSmartWnd(0, 0, 100, 100);
+    ocxObj.DPSDK_SetWndCount(selfObj.gWndId, 4);  
+    ocxObj.DPSDK_SetSelWnd(selfObj.gWndId, 0);
     dahua.on('OnWndLBtnClick', getWndNum);
   };
 
