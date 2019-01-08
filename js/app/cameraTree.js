@@ -38,8 +38,65 @@ var cameraTree = (function() {
     }
   };
 
+  /**
+   * @description 解析组织树xml
+   * @method analysisDepartment
+   * @param { String } xmlStr 文本
+   * @return { Object } xmlDoc对象
+   * @author jg
+   * @Date: 2019-01-08 17:14:15
+   * @LastEditors: jg
+   * @LastEditTime: Do not edit
+   */
+  var analysisDepartment = function(xmlStr) {
+    var xmlDom = null;
+    // 支持IE浏览器
+    if(!window.DOMParser && window.ActiveXObject){
+      var xmlDomVersions = ['MSXML.2.DOMDocument.6.0', 
+        'MSXML.2.DOMDocument.3.0', 
+        'Microsoft.XMLDOM'];
+      for(var i = 0; i < xmlDomVersions.length; i++){
+        try{
+          xmlDom = new ActiveXObject(xmlDomVersions[i]);
+          xmlDom.async = false;
+          xmlDom.loadXML(xmlStr);
+          break;
+        }catch(e){
+
+        }
+      }
+    }else if(window.DOMParser && document.implementation && 
+      document.implementation.createDocument){
+      try{
+        var domParser = new  DOMParser();
+        xmlDom = domParser.parseFromString(xmlStr, 'text/xml');
+      }catch(e){
+
+      }
+    }
+    return xmlDom;
+  };
+
+  /**
+   * @description 将数据同步到数据库
+   * @method syncDepartment
+   * @param { String } xmlDoc xml对象
+   * @return { Null } 
+   * @author jg
+   * @Date: 2019-01-08 18:14:59
+   * @LastEditors: jg
+   * @LastEditTime: Do not edit
+   */
+  var syncDepartment = function(xmlDoc) {
+    if(xmlDoc) {
+      var element = xmlDoc.getElementsByTagName("Organization");
+    }
+  };
+
   return {
     selfObj: selfObj,
-    loadDepartment: loadDepartment
+    loadDepartment: loadDepartment,
+    analysisDepartment: analysisDepartment,
+    syncDepartment: syncDepartment
   };
 }());
