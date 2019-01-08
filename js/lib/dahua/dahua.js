@@ -3,7 +3,7 @@
  * @Author: jg
  * @Date: 2018-12-27 14:55:56
  * @LastEditors: jg
- * @LastEditTime: 2018-12-27 20:00:12
+ * @LastEditTime: 2019-01-08 14:48:59
  */
 
 'use strict';
@@ -62,6 +62,7 @@ var dahua = (function() {
         DPSDK_Login(szServerIp, nPort, szUsername, szPassword);
       if(result === 0) {
         selfObj.logStatus = true;
+        alert('success');
         return 0;
       }else {
         return selfObj.ocxObj.DPSDK_GetLastError();

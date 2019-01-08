@@ -14,5 +14,19 @@ html, body {
 }
 
 .dahua_ocx {
-  @include clearDefault(100%, 400px);
+  @include clearDefault(100%, 300px);
+}
+
+.control_panel {
+  @include clearDefault(100%, 300px);
+  .button_area, .xml_area {
+    height: 100%;
+    width: 49%;
+    float: left;
+  }
+  .button_area .xml_content {
+    overflow: auto;
+  }
+
+
 }

@@ -13,6 +13,7 @@ var config = (function() {
   };
 
   return {
-
+    selfObj: selfObj,
+    camera: camera
   };
 }());

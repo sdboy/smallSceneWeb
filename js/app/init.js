@@ -12,7 +12,9 @@ var init = (function() {
   };
 
   var loadOcx = function() {
-    var ocxObj = dahua.initOcx('dahuaOcx', {'width': '100%', 'height': '80%'});
+    var ocxObj = dahua.initOcx('dahuaOcx', {'width': '25%', 'height': '100%'});
+    dahua.login(config.camera.ip, config.camera.port, config.camera.username, 
+      config.camera.password);
     selfObj.gWndId = ocxObj.DPSDK_CreateSmartWnd(0, 0, 100, 100);
     ocxObj.DPSDK_SetWndCount(selfObj.gWndId, 4);  
     ocxObj.DPSDK_SetSelWnd(selfObj.gWndId, 0);
