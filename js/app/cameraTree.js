@@ -87,16 +87,76 @@ var cameraTree = (function() {
    * @LastEditors: jg
    * @LastEditTime: Do not edit
    */
-  var syncDepartment = function(xmlDoc) {
+  var syncDepartment = function(domNode, xmlDoc) {
+    var department = null;
+    var device = null;
     if(xmlDoc) {
-      var element = xmlDoc.getElementsByTagName("Organization");
+      var element = xmlDoc.getElementsByTagName("Organization")[0];
+      if(element.hasChildNodes()) {
+        var childNode = element.childNodes;
+        for(var i = 0; i < childNode.length; i++) {
+          if(childNode[i].nodeName === 'Department') {
+            department = childNode[i];
+          }else if(childNode[i].nodeName === 'Devices') {
+            device = childNode[i];
+          }
+        }
+        generatePage(domNode, department, device, 1);
+      }
     }
+  };
+
+  var generatePage = function(domNode, department, device, level) {
+    var nextLevel = level + 1;
+    // todo 在此节点下挂设备
+    if(department) {
+      var coding = department.getAttribute('coding');
+      var name =  department.getAttribute('name');
+      var tree = '<ul class="ui-tree-ul"> ' + 
+        '<li class="camera_node camera_node_level_' + level + '" id="cameraNodeLevel_' + coding + '" data-indexCode="' + coding + '" data-isparent="true"> ' + 
+        '<span class="ui-left-box"> ' + 
+        '<i class="ui-tree-btn-bottom ui-tree-btn-right expand_button dahuaCamera close" data-load="false"></i> ' + 
+        '</span>' + 
+        '<span class="ui-right-box"> ' + 
+        '<i class="j-father-node icon-eye-close"></i> ' +
+        '</span> ' + 
+        '<a class="ui-middle-box camera_icon_name camera_name_level_' + level + '"> ' + 
+        '<span class="camera_icon icon_open"></span> ' + 
+        '<span class="camera_name" title="' + name + '" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</span> ' + 
+        '</a> ' + 
+        '<ul class="ui-tree-ul camera_node_childs camera_node_childs_level_' + nextLevel + '" style="display: none" data-level="' + nextLevel + '"> ' + 
+        '</ul> ' + 
+        '</li> ' + 
+        '</ul>';
+      $(domNode).append(tree);
+      
+      if(department.hasChildNodes()) {
+        var childNode = department.childNodes;
+        for(var i = 0; i < childNode.length; i++) {
+          if(childNode[i].nodeName === 'Device') {
+            
+          }else if(childNode[i].nodeName === 'Department') {
+
+          }
+        }
+      }else {
+
+      }
+      // 如果设备存在，判断此节点是否有设备
+      if(device) {
+
+      }
+
+
+    }
+
   };
 
   return {
     selfObj: selfObj,
     loadDepartment: loadDepartment,
     analysisDepartment: analysisDepartment,
-    syncDepartment: syncDepartment
+    syncDepartment: syncDepartment,
+    generatePage: generatePage
   };
 }());

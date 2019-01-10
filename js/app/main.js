@@ -8,6 +8,6 @@ $(document).ready(function() {
     var xmlStr = $('#xmlContent').val();
     xmlStr = xmlStr.replace(/[\t\n]/g, '');
     var xmlDoc = cameraTree.analysisDepartment(xmlStr);
-    cameraTree.syncDepartment(xmlDoc);
+    cameraTree.syncDepartment($('#dahuaCameraList'), xmlDoc);
   });
 });
