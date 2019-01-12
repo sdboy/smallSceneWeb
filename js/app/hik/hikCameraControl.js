@@ -1,3 +1,10 @@
+/*!
+ * @Description 海康摄像机操作
+ * @Author jg
+ * @Date 2019-01-11 16:51:31
+ * @LastEditors: jg
+ * @LastEditTime: 2019-01-12 15:53:20
+ */
 'use strict';
 
 var hikCameraControl = (function() {

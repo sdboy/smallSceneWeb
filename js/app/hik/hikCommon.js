@@ -1,8 +1,15 @@
+/*!
+ * @Description: 海康共享函数
+ * @Author: jg
+ * @Date: 2019-01-11 17:58:19
+ * @LastEditors: jg
+ * @LastEditTime: 2019-01-12 16:17:41
+ */
 'use strict';
 
 var hikCommon = (function() {
   var selfObj = {
-
+    'pubKey': ''
   };
 
   var getPubKey = function(callback) {
@@ -14,15 +21,15 @@ var hikCommon = (function() {
     }).then(function (oData) {
       console.log(oData)
       if (oData.responseMsg.data) {
-        pubKey = oData.responseMsg.data
-        callback()
+        selfObj.pubKey = oData.responseMsg.data
+        callback();
       }
     });
   };
 
-  var setEncrypt = function() {
+  var setEncrypt = function(value) {
     var encrypt = new JSEncrypt();
-    encrypt.setPublicKey(pubKey);
+    encrypt.setPublicKey(selfObj.pubKey);
     return encrypt.encrypt(value);
   };
 
