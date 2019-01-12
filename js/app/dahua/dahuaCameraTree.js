@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var cameraTree = (function() {
+var dahuaCameraTree = (function() {
   var selfObj = {
 
   };

@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var cameraControl = (function() {
+var dahuaCameraControl = (function() {
   var selfObj = {
     
   };
