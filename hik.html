@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>海康视频</title>
+</head>
+<body>
+  <div id="playWnd" class="playWnd"></div>
+    <div id="operate" class="operate">
+      <div class="module">
+        <div class="item"><span class="label">appkey:</span><input id="appkey" type="text"></div>
+        <div class="item"><span class="label">secret:</span><input id="secret" type="text"></div>
+        <div class="item"><span class="label">API网关IP地址:</span><input id="ip" type="text"></div>
+        <div class="item"><span class="label">API网关端口:</span><input id="port" type="text" value="80"></div>
+        <div class="item"><span class="label">抓图存储路径:</span><input id="snapDir" type="text" value="D:\SnapDir"></div>
+        <div class="item">
+          <span class="label">初始化布局:</span>
+          <select id="layout" value="2x2">
+            <option value="1x1">1x1</option>
+            <option value="2x2" selected>2x2</option>
+            <option value="3x3">3x3</option>
+            <option value="4x4">4x4</option>
+          </select>
+        </div>
+        <div class="item">
+          <span class="label">加密字段:</span>
+          <div style="display: inline-block; vertical-align: top;">
+            <label><input type="checkbox" value="secret" disabled checked>secret</label><br>
+            <label><input class="encryptedFields" type="checkbox" value="appkey">appkey</label><br>
+            <label><input class="encryptedFields" type="checkbox" value="ip">ip</label><br>
+            <label><input class="encryptedFields" type="checkbox" value="snapDir">抓图路径</label><br>
+            <label><input class="encryptedFields" type="checkbox" value="layout">布局</label>
+          </div>
+        </div>
+        <div class="item"><button id="init" class="btn">初始化</button></div>
+      </div>
+      <div class="module">
+        <div class="item"><span class="label">监控点编号：</span><input id="cameraIndexCode" type="text"></div>
+        <div class="item"><span class="label">回放开始时间：</span><input id="startTimeStamp" type="text" placeholder="yyyy-MM-dd hh:mm:ss格式"></div>
+        <div class="item"><span class="label">回放结束时间：</span><input id="endTimeStamp" type="text" placeholder="yyyy-MM-dd hh:mm:ss格式"></div>
+        <div class="item">
+          <span class="label">录像存储位置：</span>
+          <select id="recordLocation" value="0">
+            <option value="0">中心存储</option>
+            <option value="1">设备存储</option>
+          </select>
+        </div>
+        <div class="item">
+          <span class="label">传输协议：</span>
+          <select id="transMode" value="1">
+            <option value="1">TCP</option>
+            <option value="0">UDP</option>
+          </select>
+        </div>
+        <div class="item">
+          <span class="label">是否启用GPU硬解：</span>
+          <select id="gpuMode" value="0">
+            <option value="0">不启用</option>
+            <option value="1">启用</option>
+          </select>
+        </div>
+        <div class="item"><button id="startPlayback" class="btn">回放</button></div>
+        <div class="item"><button id="stopAllPlayback" class="btn">停止全部回放</button></div>
+        <div class="item"><button id="uninit" class="btn">反初始化</button></div>
+      </div>
+      <fieldset class="cbInfoDiv">
+        <legend>返回值信息</legend>
+        <div id="cbInfo" class="cbInfo"></div>
+        <button id="clear">清空</button>
+      </fieldset>
+  </div>
+</body>
+<script type="text/javascript" src="./js/lib/jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="./js/app/config.js"></script>
+<script type="text/javascript" src="./js/lib/hik/jsencrypt.min.js"></script>
+<script type="text/javascript" src="./js/lib/hik/jsWebControl-1.0.0.min.js"></script>
+<script type="text/javascript" src="./js/app/init.js"></script>
+<script type="text/javascript" src="./js/app/main.js"></script>
+<script type="text/javascript">
+  var pubKey = '';
+
+  var iLastCoverLeft = 0;
+  var iLastCoverTop = 0;
+  var iLastCoverRight = 0;
+  var iLastCoverBottom = 0;
+
+var initCount = 0;
+
+  var endTime = dateFormat(new Date(), "yyyy-MM-dd 23:59:59");
+  var startTime = dateFormat(new Date(), "yyyy-MM-dd 00:00:00");
+
+  $("#startTimeStamp").val(startTime)
+  $("#endTimeStamp").val(endTime)
+
+
+  // 初始化
+  $("#init").click(function () {
+      getPubKey(function () {
+          var appkey = $("#appkey").val();
+          var secret = setEncrypt($("#secret").val());
+          var ip = $("#ip").val();
+          var port = Number.parseInt($("#port").val());
+          var snapDir = $("#snapDir").val();
+          var layout = $("#layout").val();
+          var encryptedFields = ['secret'];
+          $(".encryptedFields").each(function (index, item) {
+              var $item = $(item);
+              if ($item.prop('checked')) {
+                  var value = $item.val();
+                  if (value !== 'secret') {
+                      encryptedFields.push(value);
+                  }
+
+                  // secret固定加密，appkey和ip根据用户勾选加密
+                  if (value == 'ip') {
+                      ip = setEncrypt(ip)
+                  }
+                  if (value == 'appkey') {
+                      appkey = setEncrypt(appkey)
+                  }
+                  if (value == 'snapDir') {
+                      snapDir = setEncrypt(snapDir)
+                  }
+                  if (value == 'layout') {
+                      layout = setEncrypt(layout)
+                  }
+              }
+          })
+          encryptedFields = encryptedFields.join(",");
+
+          if (!appkey) {
+              showCBInfo("appkey不能为空！", 'error');
+              return
+          }
+          if (!$("#secret").val()) {
+              showCBInfo("secret不能为空！", 'error');
+              return
+          }
+          if (!ip) {
+              showCBInfo("ip不能为空！", 'error');
+              return
+          }
+          if (!$("#port").val()) {
+              showCBInfo("端口不能为空！", 'error');
+              return
+          } else if (!/^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/.test($("#port").val())) {
+              showCBInfo("端口填写有误！", 'error');
+              return
+          }
+
+          oWebControl.JS_RequestInterface({
+              funcName: "init",
+              argument: JSON.stringify({
+                  appkey: appkey,
+                  secret: secret,
+                  ip: ip,
+                  playMode: 1, // 回放
+                  port: port,
+                  snapDir: snapDir,
+                  layout: layout,
+                  encryptedFields: encryptedFields
+              })
+          }).then(function (oData) {
+              showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+          });
+      })
+  });
+
+  // 录像回放
+  $("#startPlayback").click(function () {
+      var cameraIndexCode  = $("#cameraIndexCode").val();
+      var startTimeStamp = new Date($("#startTimeStamp").val().replace('-', '/')).getTime();
+      var endTimeStamp = new Date($("#endTimeStamp").val().replace('-', '/')).getTime();
+      var recordLocation = +$("#recordLocation").val();
+      var transMode = +$("#transMode").val();
+      var gpuMode = +$("#gpuMode").val();
+
+      if (!cameraIndexCode) {
+          showCBInfo("监控点编号不能为空！", 'error');
+          return
+      }
+
+      if (Number.isNaN(+startTimeStamp) || Number.isNaN(+endTimeStamp)) {
+          showCBInfo("时间格式有误！", 'error');
+          return
+      }
+
+      oWebControl.JS_RequestInterface({
+          funcName: "startPlayback",
+          argument: JSON.stringify({
+              cameraIndexCode: cameraIndexCode,
+              startTimeStamp: Math.floor(startTimeStamp / 1000),
+              endTimeStamp: Math.floor(endTimeStamp / 1000),
+              recordLocation: recordLocation,
+              transMode: transMode,
+              gpuMode: gpuMode
+          })
+      }).then(function (oData) {
+          showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+      });
+  })
+  
+  // 停止回放
+  $("#stopAllPlayback").click(function () {
+      oWebControl.JS_RequestInterface({
+          funcName: "stopAllPlayback"
+      }).then(function (oData) {
+          showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+      });
+  })
+  $("#uninit").click(uninit)
+
+  // 显示回调信息
+  function showCBInfo(szInfo, type) {
+      if (type === 'error') {
+          szInfo = "<div style='color: red;'>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
+      } else {
+          szInfo = "<div>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
+      }
+      $("#cbInfo").html(szInfo + $("#cbInfo").html());
+  }
+
+  $("#clear").click(function() {
+      $("#cbInfo").html('');
+  })
+  </script>
+</html>

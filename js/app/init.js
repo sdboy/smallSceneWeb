@@ -26,7 +26,48 @@ var init = (function() {
 
   };
 
+  var initHikWnd = function() {
+    oWebControl = new WebControl({
+      szPluginContainer: "playWnd",
+      iServicePortStart: 15900,
+      iServicePortEnd: 15909,
+      cbConnectSuccess: function () {
+        setCallbacks();
+        oWebControl.JS_StartService("window", {
+          dllPath: "./VideoPluginConnect.dll"
+          //dllPath: "./DllForTest-Win32.dll"
+        }).then(function () {
+          oWebControl.JS_CreateWnd("playWnd", 600, 400).then(function () {
+            console.log("JS_CreateWnd success");
+          });
+        }, function () {
+        
+        });
+      },
+      cbConnectError: function () {
+        console.log("cbConnectError");
+        oWebControl = null;
+        $("#playWnd").html("插件未启动，正在尝试启动，请稍候...");
+        WebControl.JS_WakeUp("VideoWebPlugin://");
+        initCount ++;
+        if (initCount < 3) {
+          setTimeout(function () {
+            initPlugin();
+          }, 3000)
+        } else {
+          $("#playWnd").html("插件启动失败，请检查插件是否安装！");
+        }
+      },
+      cbConnectClose: function () {
+        console.log("cbConnectClose");
+        oWebControl = null;
+      }
+    });
+  };
+
   return {
-    loadOcx: loadOcx
+    loadOcx: loadOcx,
+    initHik: initHik,
+    initHikWnd: initHikWnd
   };
 }());
