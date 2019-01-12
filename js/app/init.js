@@ -9,6 +9,7 @@
 var init = (function() {
   var selfObj = {
     'gWndId': null,
+    'hikInitCount': 0
   };
 
   var loadOcx = function() {
@@ -28,7 +29,7 @@ var init = (function() {
 
   var initHik = function() {
     var appkey = $("#appkey").val();
-    var secret = setEncrypt($("#secret").val());
+    var secret = hikCommon.setEncrypt($("#secret").val());
     var ip = $("#ip").val();
     var port = Number.parseInt($("#port").val());
     var snapDir = $("#snapDir").val();
@@ -44,16 +45,16 @@ var init = (function() {
 
         // secret固定加密，appkey和ip根据用户勾选加密
         if (value === 'ip') {
-          ip = setEncrypt(ip)
+          ip = hikCommon.setEncrypt(ip);
         }
         if (value === 'appkey') {
-          appkey = setEncrypt(appkey)
+          appkey = hikCommon.setEncrypt(appkey);
         }
         if (value === 'snapDir') {
-          snapDir = setEncrypt(snapDir)
+          snapDir = hikCommon.setEncrypt(snapDir);
         }
         if (value === 'layout') {
-          layout = setEncrypt(layout)
+          layout = hikCommon.setEncrypt(layout);
         }
       }
     });
@@ -61,22 +62,22 @@ var init = (function() {
 
     if (!appkey) {
       hikCommon.showCBInfo("appkey不能为空！", 'error');
-      return
+      return;
     }
     if (!$("#secret").val()) {
       hikCommon.showCBInfo("secret不能为空！", 'error');
-      return
+      return;
     }
     if (!ip) {
       hikCommon.showCBInfo("ip不能为空！", 'error');
-      return
+      return;
     }
     if (!$("#port").val()) {
       hikCommon.showCBInfo("端口不能为空！", 'error');
-      return
+      return;
     } else if (!/^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/.test($("#port").val())) {
       hikCommon.showCBInfo("端口填写有误！", 'error');
-      return
+      return;
     }
 
     oWebControl.JS_RequestInterface({
@@ -102,7 +103,7 @@ var init = (function() {
       iServicePortStart: 15900,
       iServicePortEnd: 15909,
       cbConnectSuccess: function () {
-        setCallbacks();
+        hikCommon.setCallbacks();
         oWebControl.JS_StartService("window", {
           dllPath: "./VideoPluginConnect.dll"
           //dllPath: "./DllForTest-Win32.dll"
@@ -113,22 +114,24 @@ var init = (function() {
         }, function () {
         
         });
+        selfObj.hikInitCount = 0;
       },
       cbConnectError: function () {
         console.log("cbConnectError");
         oWebControl = null;
         $("#playWnd").html("插件未启动，正在尝试启动，请稍候...");
         WebControl.JS_WakeUp("VideoWebPlugin://");
-        initCount ++;
-        if (initCount < 3) {
+        selfObj.hikInitCount++;
+        if (selfObj.hikInitCount < 3) {
           setTimeout(function () {
-            initPlugin();
-          }, 3000)
+            initHikWnd();
+          }, 3000);
         } else {
           $("#playWnd").html("插件启动失败，请检查插件是否安装！");
         }
       },
       cbConnectClose: function () {
+        selfObj.hikInitCount = 0;
         console.log("cbConnectClose");
         oWebControl = null;
       }

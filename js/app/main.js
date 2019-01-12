@@ -21,11 +21,11 @@ $(document).ready(function() {
   $(window).scroll(function () {
     if (oWebControl) {
       oWebControl.JS_Resize(600, 400);
-      setWndCover();
+      hikCameraControl.setWndCover();
     }
   });
   $("#init").click(function () {
-    getPubKey(init.initHik);
+    hikCommon.getPubKey(init.initHik);
   });
 
   $("#uninit").click(hikCameraControl.uninit);

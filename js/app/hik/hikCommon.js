@@ -28,16 +28,28 @@ var hikCommon = (function() {
 
   var showCBInfo = function(szInfo, type) {
     if (type === 'error') {
-      szInfo = "<div style='color: red;'>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
+      szInfo = "<div style='color: red;'>" + dateUtil.dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
     } else {
-      szInfo = "<div>" + dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
+      szInfo = "<div>" + dateUtil.dateFormat(new Date(), "yyyy-MM-dd hh:mm:ss") + " " + szInfo + "</div>";
     }
     $("#cbInfo").html(szInfo + $("#cbInfo").html());
+  };
+
+  var setCallbacks = function() {
+    oWebControl.JS_SetWindowControlCallback({
+      cbIntegrationCallBack: cbIntegrationCallBack
+    });
+  };
+
+  var cbIntegrationCallBack = function(oData) {
+    showCBInfo(JSON.stringify(oData.responseMsg));
   };
 
   return {
     getPubKey: getPubKey,
     setEncrypt: setEncrypt,
-    showCBInfo: showCBInfo
+    showCBInfo: showCBInfo,
+    setCallbacks: setCallbacks,
+    cbIntegrationCallBack: cbIntegrationCallBack
   };
 }());

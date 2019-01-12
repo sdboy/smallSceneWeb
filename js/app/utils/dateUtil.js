@@ -1,6 +1,6 @@
 'use strict';
 
-var dataUtil = (function() {
+var dateUtil = (function() {
   
   var dateFormat = function() {
     var o = {
