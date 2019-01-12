@@ -91,7 +91,7 @@ var init = (function() {
         snapDir: snapDir,
         layout: layout,
         encryptedFields: encryptedFields
-      });
+      })
     }).then(function (oData) {
       hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
     });

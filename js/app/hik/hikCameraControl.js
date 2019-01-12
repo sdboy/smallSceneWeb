@@ -41,7 +41,7 @@ var hikCameraControl = (function() {
         oWebControl.JS_StopService("window").then(function () {
           oWebControl.JS_Disconnect().then(function () {
             console.log("JS_Disconnect");
-          }, function () {});
+          }, function () {})
         });
       }
     }

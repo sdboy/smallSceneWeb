@@ -5,8 +5,8 @@ var bIE = null;
 
 $(document).ready(function() {
 
-  var endTime = dateFormat(new Date(), "yyyy-MM-dd 23:59:59");
-  var startTime = dateFormat(new Date(), "yyyy-MM-dd 00:00:00");
+  var endTime = dateUtil.dateFormat(new Date(), "yyyy-MM-dd 23:59:59");
+  var startTime = dateUtil.dateFormat(new Date(), "yyyy-MM-dd 00:00:00");
   $("#startTimeStamp").val(startTime);
   $("#endTimeStamp").val(endTime);
 
@@ -15,7 +15,7 @@ $(document).ready(function() {
   $(window).resize(function () {
     if (oWebControl) {
       oWebControl.JS_Resize(600, 400);
-      setWndCover();
+      hikCameraControl.setWndCover();
     }
   });
   $(window).scroll(function () {

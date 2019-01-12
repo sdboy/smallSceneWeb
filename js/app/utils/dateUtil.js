@@ -2,7 +2,7 @@
 
 var dateUtil = (function() {
   
-  var dateFormat = function() {
+  var dateFormat = function(oDate, fmt) {
     var o = {
       "M+": oDate.getMonth() + 1, //月份
       "d+": oDate.getDate(), //日
