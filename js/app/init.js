@@ -26,6 +26,76 @@ var init = (function() {
 
   };
 
+  var initHik = function() {
+    var appkey = $("#appkey").val();
+    var secret = setEncrypt($("#secret").val());
+    var ip = $("#ip").val();
+    var port = Number.parseInt($("#port").val());
+    var snapDir = $("#snapDir").val();
+    var layout = $("#layout").val();
+    var encryptedFields = ['secret'];
+    $(".encryptedFields").each(function (index, item) {
+      var $item = $(item);
+      if ($item.prop('checked')) {
+        var value = $item.val();
+        if (value !== 'secret') {
+          encryptedFields.push(value);
+        }
+
+        // secret固定加密，appkey和ip根据用户勾选加密
+        if (value === 'ip') {
+          ip = setEncrypt(ip)
+        }
+        if (value === 'appkey') {
+          appkey = setEncrypt(appkey)
+        }
+        if (value === 'snapDir') {
+          snapDir = setEncrypt(snapDir)
+        }
+        if (value === 'layout') {
+          layout = setEncrypt(layout)
+        }
+      }
+    });
+    encryptedFields = encryptedFields.join(",");
+
+    if (!appkey) {
+      hikCommon.showCBInfo("appkey不能为空！", 'error');
+      return
+    }
+    if (!$("#secret").val()) {
+      hikCommon.showCBInfo("secret不能为空！", 'error');
+      return
+    }
+    if (!ip) {
+      hikCommon.showCBInfo("ip不能为空！", 'error');
+      return
+    }
+    if (!$("#port").val()) {
+      hikCommon.showCBInfo("端口不能为空！", 'error');
+      return
+    } else if (!/^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/.test($("#port").val())) {
+      hikCommon.showCBInfo("端口填写有误！", 'error');
+      return
+    }
+
+    oWebControl.JS_RequestInterface({
+      funcName: "init",
+      argument: JSON.stringify({
+        appkey: appkey,
+        secret: secret,
+        ip: ip,
+        playMode: 1, // 回放
+        port: port,
+        snapDir: snapDir,
+        layout: layout,
+        encryptedFields: encryptedFields
+      });
+    }).then(function (oData) {
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+    });
+  };
+
   var initHikWnd = function() {
     oWebControl = new WebControl({
       szPluginContainer: "playWnd",

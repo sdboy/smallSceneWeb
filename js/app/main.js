@@ -4,6 +4,12 @@ var oWebControl = null;
 var bIE = null;
 
 $(document).ready(function() {
+
+  var endTime = dateFormat(new Date(), "yyyy-MM-dd 23:59:59");
+  var startTime = dateFormat(new Date(), "yyyy-MM-dd 00:00:00");
+  $("#startTimeStamp").val(startTime);
+  $("#endTimeStamp").val(endTime);
+
   bIE = (!!window.ActiveXObject || 'ActiveXObject' in window);
   $(window).unload(hikCameraControl.destroyWnd);
   $(window).resize(function () {
@@ -18,7 +24,19 @@ $(document).ready(function() {
       setWndCover();
     }
   });
-  
+  $("#init").click(function () {
+    getPubKey(init.initHik);
+  });
+
+  $("#uninit").click(hikCameraControl.uninit);
+
+  $("#startPlayback").click(hikCameraControl.startPlayBack);
+
+  $("#stopAllPlayback").click(hikCameraControl.stopPlayBack);
+
+  $("#clear").click(function() {
+    $("#cbInfo").html('');
+  });
 
   $('#loadDepartment').off().on('click', function() {
     cameraTree.loadDepartment('xmlContent');

@@ -9,7 +9,7 @@ var hikCameraControl = (function() {
     oWebControl.JS_RequestInterface({
       funcName: "uninit"
     }).then(function (oData) {
-      showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
     });
   };
 
@@ -18,12 +18,12 @@ var hikCameraControl = (function() {
     oWebControl.JS_RequestInterface({
       funcName: "destroyWnd"
     }).then(function (oData) {
-      showCBInfo(JSON.stringify(oData));
+      hikCommon.showCBInfo(JSON.stringify(oData));
     });
     if (bIE) {
       if (oWebControl != null) {
         oWebControl.JS_Disconnect().then(function () {
-            console.log("JS_Disconnect");
+          console.log("JS_Disconnect");
         }, function () {});
       }
     } else{
@@ -77,32 +77,86 @@ var hikCameraControl = (function() {
     }
   };
 
-  var getPubKey = function() {
+  var startPlayBack = function() {
+    var cameraIndexCode  = $("#cameraIndexCode").val();
+    var startTimeStamp = new Date($("#startTimeStamp").val().replace('-', '/')).getTime();
+    var endTimeStamp = new Date($("#endTimeStamp").val().replace('-', '/')).getTime();
+    var recordLocation = +$("#recordLocation").val();
+    var transMode = +$("#transMode").val();
+    var gpuMode = +$("#gpuMode").val();
+
+    if (!cameraIndexCode) {
+      hikCommon.showCBInfo("监控点编号不能为空！", 'error');
+      return
+    }
+
+    if (Number.isNaN(+startTimeStamp) || Number.isNaN(+endTimeStamp)) {
+      hikCommon.showCBInfo("时间格式有误！", 'error');
+      return
+    }
+
     oWebControl.JS_RequestInterface({
-      funcName: "getRSAPubKey",
+      funcName: "startPlayback",
       argument: JSON.stringify({
-        keyLength: 1024
+        cameraIndexCode: cameraIndexCode,
+        startTimeStamp: Math.floor(startTimeStamp / 1000),
+        endTimeStamp: Math.floor(endTimeStamp / 1000),
+        recordLocation: recordLocation,
+        transMode: transMode,
+        gpuMode: gpuMode
       })
     }).then(function (oData) {
-      console.log(oData)
-      if (oData.responseMsg.data) {
-        pubKey = oData.responseMsg.data
-        callback()
-      }
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
     });
   };
 
-  var setEncrypt = function() {
-    var encrypt = new JSEncrypt();
-    encrypt.setPublicKey(pubKey);
-    return encrypt.encrypt(value);
+  var stopPlayBack = function() {
+    oWebControl.JS_RequestInterface({
+      funcName: "stopAllPlayback"
+    }).then(function (oData) {
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+    });
+  };
+
+  var startPlayReal = function() {
+    var cameraIndexCode  = $("#cameraIndexCode ").val();
+    var streamMode = +$("#streamMode").val();
+    var transMode = +$("#transMode").val();
+    var gpuMode = +$("#gpuMode").val();
+
+    if (!cameraIndexCode ) {
+      hikCommon.showCBInfo("监控点编号不能为空！", 'error');
+      return
+    }
+
+    oWebControl.JS_RequestInterface({
+      funcName: "startPreview",
+      argument: JSON.stringify({
+        cameraIndexCode : cameraIndexCode ,
+        streamMode: streamMode,
+        transMode: transMode,
+        gpuMode: gpuMode
+      })
+    }).then(function (oData) {
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+    });
+  };
+
+  var stopPlayReal = function() {
+    oWebControl.JS_RequestInterface({
+      funcName: "stopAllPreview"
+    }).then(function (oData) {
+      hikCommon.showCBInfo(JSON.stringify(oData ? oData.responseMsg : ''));
+    });
   };
 
   return {
     uninit: uninit,
     destroyWnd: destroyWnd,
     setWndCover: setWndCover,
-    getPubKey: getPubKey,
-    setEncrypt: setEncrypt
+    startPlayBack: startPlayBack,
+    stopPlayBack: stopPlayBack,
+    startPlayReal: startPlayReal,
+    stopPlayReal: stopPlayReal
   };
 }());

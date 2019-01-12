@@ -1,7 +1,7 @@
 'use strict';
 
-var hikPlayBack = (function() {
-  var selfObj = function() {
+var hikPlayReal = (function() {
+  var selfObj = {
 
   };
 
@@ -11,13 +11,12 @@ var hikPlayBack = (function() {
     });
   };
 
-  var cbIntegrationCallBack = function(oData) {
+  var cbIntegrationCallBack = function() {
     hikCommon.showCBInfo(JSON.stringify(oData.responseMsg));
   };
-
   
   return {
     setCallbacks: setCallbacks,
-
+    cbIntegrationCallBack: cbIntegrationCallBack
   };
 }());
